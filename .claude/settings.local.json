@@ -6,7 +6,8 @@
       "Bash(bunx shadcn@latest add:*)",
       "Bash(bun add:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(bun run build:*)"
     ],
     "deny": [],
     "ask": []
