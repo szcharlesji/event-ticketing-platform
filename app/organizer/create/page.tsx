@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label'
 import { useCreateEvent, useTransactionReceipt } from '@/lib/hooks'
 import { useAccount } from 'wagmi'
 import { parseEther } from 'viem'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
 export default function CreateEventPage() {
@@ -16,6 +16,7 @@ export default function CreateEventPage() {
   const router = useRouter()
   const { createEvent, hash, isPending } = useCreateEvent()
   const { isSuccess } = useTransactionReceipt(hash)
+  const [mounted, setMounted] = useState(false)
 
   const [formData, setFormData] = useState({
     name: '',
@@ -29,6 +30,10 @@ export default function CreateEventPage() {
     maxTransfers: '2',
     royaltyBps: '500',
   })
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const handleSubmit = () => {
     if (!address) return
@@ -157,12 +162,12 @@ export default function CreateEventPage() {
               className="w-full"
               size="lg"
               onClick={handleSubmit}
-              disabled={!address || isPending || !formData.name || !formData.basePrice || !formData.date}
+              disabled={!mounted || !address || isPending || !formData.name || !formData.basePrice || !formData.date}
             >
               {isPending ? 'Creating...' : isSuccess ? 'Success! Redirecting...' : 'Create Event'}
             </Button>
 
-            {isSuccess && (
+            {mounted && isSuccess && (
               <p className="text-sm text-center text-green-600">
                 Event created successfully! Redirecting to home page...
               </p>

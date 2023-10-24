@@ -10,7 +10,7 @@ import { useParams } from 'next/navigation'
 import { useEventTicketData, useMintTicket, useIsVerified, useTransactionReceipt } from '@/lib/hooks'
 import { useAccount } from 'wagmi'
 import { formatEther, parseEther } from 'viem'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 export default function EventDetailPage() {
   const params = useParams()
@@ -21,8 +21,13 @@ export default function EventDetailPage() {
   const { data: isVerified } = useIsVerified(userAddress)
   const { mintTicket, hash, isPending } = useMintTicket(address)
   const { isSuccess: txSuccess } = useTransactionReceipt(hash)
+  const [mounted, setMounted] = useState(false)
 
   const [seatInfo, setSeatInfo] = useState('')
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const handlePurchase = () => {
     if (!basePrice || !seatInfo.trim()) return
@@ -44,6 +49,7 @@ export default function EventDetailPage() {
   }
 
   const date = eventDate ? new Date(Number(eventDate) * 1000) : null
+  const dateStr = date ? date.toISOString().split('T')[0] : 'TBD'
   const maxResalePrice = basePrice && resaleConfig ?
     (basePrice * resaleConfig[0]) / BigInt(100) : basePrice
 
@@ -97,10 +103,14 @@ export default function EventDetailPage() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Date</span>
-                  <span className="text-sm">{date ? date.toLocaleDateString() : 'TBD'}</span>
+                  <span className="text-sm">{dateStr}</span>
                 </div>
 
-                {isConnected ? (
+                {!mounted ? (
+                  <div className="text-center py-4">
+                    <p className="text-sm text-muted-foreground">Loading...</p>
+                  </div>
+                ) : isConnected ? (
                   isVerified ? (
                     <>
                       <div className="space-y-2">

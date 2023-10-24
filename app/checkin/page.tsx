@@ -7,15 +7,20 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { useRedeemTicket, useTicketData } from '@/lib/hooks'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 export default function CheckinPage() {
   const [qrValue, setQrValue] = useState('')
   const [ticketAddress, setTicketAddress] = useState<`0x${string}` | undefined>()
   const [tokenId, setTokenId] = useState<bigint | undefined>()
+  const [mounted, setMounted] = useState(false)
 
   const { data: ticketData } = useTicketData(ticketAddress, tokenId)
   const { redeemTicket, isPending } = useRedeemTicket(ticketAddress)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const handleScan = () => {
     // Parse QR code format: "ticketAddress:tokenId"
@@ -73,7 +78,7 @@ export default function CheckinPage() {
             </CardContent>
           </Card>
 
-          {ticketInfo && (
+          {mounted && ticketInfo && (
             <Card>
               <CardHeader>
                 <CardTitle>Ticket Information</CardTitle>

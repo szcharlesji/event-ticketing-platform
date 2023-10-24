@@ -10,7 +10,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { useCreateEvent, useTransactionReceipt, useGetAllEvents, useEventTicketData } from '@/lib/hooks'
 import { useAccount } from 'wagmi'
 import { parseEther, formatEther } from 'viem'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Badge } from '@/components/ui/badge'
 
 const salesData = [
@@ -35,6 +35,7 @@ function EventManagementCard({ eventAddress }: { eventAddress: `0x${string}` }) 
   if (organizer !== address) return null
 
   const date = eventDate ? new Date(Number(eventDate) * 1000) : null
+  const dateStr = date ? date.toISOString().split('T')[0] : 'TBD'
   const sold = totalSupply ? Number(totalSupply) : 0
 
   return (
@@ -50,7 +51,7 @@ function EventManagementCard({ eventAddress }: { eventAddress: `0x${string}` }) 
             <div className="text-sm text-muted-foreground">Sold</div>
           </div>
           <div>
-            <div className="text-2xl font-bold">{date ? date.toLocaleDateString() : 'TBD'}</div>
+            <div className="text-2xl font-bold">{dateStr}</div>
             <div className="text-sm text-muted-foreground">Date</div>
           </div>
           <div>
@@ -72,6 +73,7 @@ export default function OrganizerPage() {
   const { createEvent, hash, isPending } = useCreateEvent()
   const { isSuccess } = useTransactionReceipt(hash)
   const { data: events } = useGetAllEvents()
+  const [mounted, setMounted] = useState(false)
 
   const [formData, setFormData] = useState({
     name: '',
@@ -84,6 +86,10 @@ export default function OrganizerPage() {
     maxTransfers: '2',
     royaltyBps: '500',
   })
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const handleSubmit = () => {
     if (!address) return
@@ -223,12 +229,12 @@ export default function OrganizerPage() {
                   className="w-full"
                   size="lg"
                   onClick={handleSubmit}
-                  disabled={!address || isPending || !formData.name || !formData.basePrice || !formData.date}
+                  disabled={!mounted || !address || isPending || !formData.name || !formData.basePrice || !formData.date}
                 >
                   {isPending ? 'Creating Event...' : isSuccess ? 'Success! ✓' : 'Deploy Event Contract'}
                 </Button>
 
-                {isSuccess && (
+                {mounted && isSuccess && (
                   <div className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
                     <p className="text-sm text-green-600 dark:text-green-400 font-medium">
                       Event created successfully! Check "My Events" tab to see it.
@@ -236,7 +242,7 @@ export default function OrganizerPage() {
                   </div>
                 )}
 
-                {!address && (
+                {mounted && !address && (
                   <p className="text-sm text-center text-muted-foreground">
                     Connect your wallet to create events
                   </p>
@@ -247,7 +253,11 @@ export default function OrganizerPage() {
 
           <TabsContent value="manage">
             <div className="grid gap-4">
-              {!address ? (
+              {!mounted ? (
+                <div className="text-center py-12">
+                  <p className="text-muted-foreground">Loading...</p>
+                </div>
+              ) : !address ? (
                 <div className="text-center py-12">
                   <p className="text-muted-foreground">Connect your wallet to view your events</p>
                 </div>

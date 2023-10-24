@@ -8,17 +8,22 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { useVerifyAddress, useVerifyAddressBatch, useUnverifyAddress, useIsVerified } from '@/lib/hooks'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 export default function AdminPage() {
   const [singleAddress, setSingleAddress] = useState('')
   const [batchAddresses, setBatchAddresses] = useState('')
   const [checkAddress, setCheckAddress] = useState('')
+  const [mounted, setMounted] = useState(false)
 
   const { verifyAddress, isPending: isVerifying } = useVerifyAddress()
   const { verifyAddressBatch, isPending: isBatchVerifying } = useVerifyAddressBatch()
   const { unverifyAddress, isPending: isUnverifying } = useUnverifyAddress()
   const { data: isVerified } = useIsVerified(checkAddress as `0x${string}`)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const handleVerifySingle = () => {
     if (!singleAddress.match(/^0x[a-fA-F0-9]{40}$/)) {
@@ -144,7 +149,7 @@ export default function AdminPage() {
                   onChange={(e) => setCheckAddress(e.target.value)}
                 />
               </div>
-              {checkAddress.match(/^0x[a-fA-F0-9]{40}$/) && (
+              {mounted && checkAddress.match(/^0x[a-fA-F0-9]{40}$/) && (
                 <div className="flex items-center justify-between p-4 border rounded-lg">
                   <span className="font-medium">{checkAddress}</span>
                   <Badge variant={isVerified ? 'default' : 'destructive'}>

@@ -32,6 +32,7 @@ function EventCard({ address }: { address: `0x${string}` }) {
   }
 
   const date = eventDate ? new Date(Number(eventDate) * 1000) : null
+  const dateStr = date ? date.toISOString().split('T')[0] : 'TBD'
   const available = totalSupply ? Number(totalSupply) - Number(balance || BigInt(0)) : 0
   const total = totalSupply ? Number(totalSupply) : 0
 
@@ -47,7 +48,7 @@ function EventCard({ address }: { address: `0x${string}` }) {
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">Date</span>
             <span className="font-medium">
-              {date ? date.toLocaleDateString() : 'TBD'}
+              {dateStr}
             </span>
           </div>
           <div className="flex justify-between text-sm">

@@ -11,7 +11,7 @@ import { QRCodeSVG } from 'qrcode.react'
 import { useAccount } from 'wagmi'
 import { useGetAllEvents, useBalanceOf, useTokenOfOwnerByIndex, useTicketData, useEventTicketData, useApproveMarketplace, useListTicket } from '@/lib/hooks'
 import { formatEther, parseEther } from 'viem'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 function TicketCard({ ticketAddress, tokenId }: { ticketAddress: `0x${string}`; tokenId: bigint }) {
   const { eventName } = useEventTicketData(ticketAddress)
@@ -131,6 +131,11 @@ function TicketCard({ ticketAddress, tokenId }: { ticketAddress: `0x${string}`; 
 export default function TicketsPage() {
   const { address } = useAccount()
   const { data: events } = useGetAllEvents()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const userTickets: Array<{ address: `0x${string}`; tokenId: bigint }> = []
 
@@ -159,7 +164,11 @@ export default function TicketsPage() {
           </p>
         </div>
 
-        {!address ? (
+        {!mounted ? (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">Loading...</p>
+          </div>
+        ) : !address ? (
           <div className="text-center py-12">
             <p className="text-muted-foreground">Connect your wallet to view your tickets</p>
           </div>

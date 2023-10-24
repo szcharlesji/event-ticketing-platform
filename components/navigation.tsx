@@ -3,11 +3,17 @@
 import Link from 'next/link'
 import { useAccount, useConnect, useDisconnect } from 'wagmi'
 import { Button } from '@/components/ui/button'
+import { useEffect, useState } from 'react'
 
 export function Navigation() {
   const { address, isConnected } = useAccount()
   const { connect, connectors } = useConnect()
   const { disconnect } = useDisconnect()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   return (
     <nav className="border-b">
@@ -38,7 +44,9 @@ export function Navigation() {
           </div>
         </div>
         <div>
-          {isConnected ? (
+          {!mounted ? (
+            <Button disabled>Connect Wallet</Button>
+          ) : isConnected ? (
             <Button onClick={() => disconnect()}>
               {address?.slice(0, 6)}...{address?.slice(-4)}
             </Button>
