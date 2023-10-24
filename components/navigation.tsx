@@ -26,8 +26,14 @@ export function Navigation() {
             <Link href="/tickets" className="hover:underline">
               My Tickets
             </Link>
-            <Link href="/organizer" className="hover:underline">
-              Organizer
+            <Link href="/organizer/create" className="hover:underline">
+              Create Event
+            </Link>
+            <Link href="/admin" className="hover:underline">
+              Admin
+            </Link>
+            <Link href="/checkin" className="hover:underline">
+              Check-In
             </Link>
           </div>
         </div>
