@@ -2,7 +2,11 @@
   "permissions": {
     "allow": [
       "Bash(forge build:*)",
-      "Bash(forge test:*)"
+      "Bash(forge test:*)",
+      "Bash(bunx shadcn@latest add:*)",
+      "Bash(bun add:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []
