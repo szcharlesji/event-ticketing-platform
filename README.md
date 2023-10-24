@@ -1,36 +1,63 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# NFT Event Ticketing Platform
 
-## Getting Started
+Anti-scalping event ticketing platform on Base with smart contract-enforced price caps, transfer restrictions, and controlled secondary markets.
 
-First, run the development server:
+## Features
+
+- **Price Caps**: Max resale price enforced (e.g., 1.5x original)
+- **Transfer Limits**: Hold periods (24-48hrs) and max transfers per ticket
+- **Identity Verification**: Whitelisted buyers only
+- **Organizer Royalties**: 5-10% on secondary sales
+- **QR Code Entry**: Blockchain-verified ticket redemption
+
+## Tech Stack
+
+**Contracts**: Solidity 0.8.28, Foundry, OpenZeppelin, Base Sepolia
+**Frontend**: Next.js 15, React 19, Shadcn UI, Wagmi v2, Viem, Recharts
+
+## Setup
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# Install dependencies
+bun install
+
+# Contracts
+cd contracts
+forge test              # Run 33 tests
+forge build             # Compile contracts
+
+# Deploy
+cp .env.example .env    # Add PRIVATE_KEY
+forge script script/Deploy.s.sol --rpc-url base_sepolia --broadcast
+
+# Frontend
+bun dev                 # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Smart Contracts
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **IdentityRegistry**: Admin whitelist for verified buyers
+- **EventTicket**: ERC-721 with anti-scalping rules
+- **TicketMarketplace**: Controlled secondary market with price caps
+- **EventFactory**: Deploy events with custom resale rules
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Architecture
 
-## Learn More
+```
+contracts/src/          # Solidity contracts
+contracts/test/         # 33 passing tests
+app/                    # Next.js pages (events, marketplace, tickets, organizer)
+components/             # UI components + wallet connection
+lib/                    # Web3 config (Base + Base Sepolia)
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Usage
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. **Create Event**: Set price caps and anti-scalping rules
+2. **Buy Ticket**: Primary purchase (verified buyers only)
+3. **Resell**: List after hold period (price automatically capped)
+4. **Enter Venue**: Show QR code, verify on-chain
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## License
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT
