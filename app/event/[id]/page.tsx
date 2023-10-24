@@ -45,7 +45,7 @@ export default function EventDetailPage() {
 
   const date = eventDate ? new Date(Number(eventDate) * 1000) : null
   const maxResalePrice = basePrice && resaleConfig ?
-    (basePrice * resaleConfig[0]) / 100n : basePrice
+    (basePrice * resaleConfig[0]) / BigInt(100) : basePrice
 
   return (
     <div className="min-h-screen bg-background">

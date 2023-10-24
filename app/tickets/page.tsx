@@ -138,7 +138,7 @@ export default function TicketsPage() {
     for (const eventAddress of events as `0x${string}`[]) {
       const { data: balance } = useBalanceOf(eventAddress, address)
       if (balance) {
-        for (let i = 0n; i < balance; i++) {
+        for (let i = BigInt(0); i < balance; i++) {
           const { data: tokenId } = useTokenOfOwnerByIndex(eventAddress, address, i)
           if (tokenId !== undefined) {
             userTickets.push({ address: eventAddress, tokenId })

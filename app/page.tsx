@@ -32,7 +32,7 @@ function EventCard({ address }: { address: `0x${string}` }) {
   }
 
   const date = eventDate ? new Date(Number(eventDate) * 1000) : null
-  const available = totalSupply ? Number(totalSupply) - Number(balance || 0n) : 0
+  const available = totalSupply ? Number(totalSupply) - Number(balance || BigInt(0)) : 0
   const total = totalSupply ? Number(totalSupply) : 0
 
   return (

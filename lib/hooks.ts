@@ -222,7 +222,7 @@ export function useMintTicket(ticketAddress?: `0x${string}`) {
   return {
     mintTicket: (to: `0x${string}`, seatInfo: string, value: bigint) =>
       writeContract({
-        address: ticketAddress,
+        address: ticketAddress!,
         abi: eventTicketAbi,
         functionName: 'mintTicket',
         args: [to, seatInfo],
@@ -239,7 +239,7 @@ export function useRedeemTicket(ticketAddress?: `0x${string}`) {
   return {
     redeemTicket: (tokenId: bigint) =>
       writeContract({
-        address: ticketAddress,
+        address: ticketAddress!,
         abi: eventTicketAbi,
         functionName: 'redeemTicket',
         args: [tokenId],
@@ -255,7 +255,7 @@ export function useWithdraw(ticketAddress?: `0x${string}`) {
   return {
     withdraw: () =>
       writeContract({
-        address: ticketAddress,
+        address: ticketAddress!,
         abi: eventTicketAbi,
         functionName: 'withdraw',
       }),
@@ -271,7 +271,7 @@ export function useApproveMarketplace(ticketAddress?: `0x${string}`) {
   return {
     approveMarketplace: () =>
       writeContract({
-        address: ticketAddress,
+        address: ticketAddress!,
         abi: eventTicketAbi,
         functionName: 'setApprovalForAll',
         args: [getContractAddress(chain?.id || 84532, 'marketplace') as `0x${string}`, true],
