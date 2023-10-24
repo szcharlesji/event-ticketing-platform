@@ -4,21 +4,48 @@ import { Navigation } from '@/components/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { useParams } from 'next/navigation'
+import { useEventTicketData, useMintTicket, useIsVerified, useTransactionReceipt } from '@/lib/hooks'
+import { useAccount } from 'wagmi'
+import { formatEther, parseEther } from 'viem'
+import { useState } from 'react'
 
 export default function EventDetailPage() {
   const params = useParams()
+  const address = params.id as `0x${string}`
+  const { address: userAddress, isConnected } = useAccount()
 
-  const event = {
-    name: 'Summer Music Festival 2025',
-    date: 'July 15, 2025',
-    venue: 'Central Park, NYC',
-    description: 'Join us for an amazing day of music featuring top artists from around the world.',
-    basePrice: '0.1 ETH',
-    maxResalePrice: '0.15 ETH',
-    available: 45,
-    total: 100,
+  const { eventName, eventDate, basePrice, totalSupply, resaleConfig, isLoading } = useEventTicketData(address)
+  const { data: isVerified } = useIsVerified(userAddress)
+  const { mintTicket, hash, isPending } = useMintTicket(address)
+  const { isSuccess: txSuccess } = useTransactionReceipt(hash)
+
+  const [seatInfo, setSeatInfo] = useState('')
+
+  const handlePurchase = () => {
+    if (!basePrice || !seatInfo.trim()) return
+    mintTicket(userAddress!, seatInfo, basePrice)
   }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navigation />
+        <main className="container mx-auto px-4 py-8">
+          <div className="animate-pulse space-y-4">
+            <div className="h-8 bg-muted rounded w-1/3" />
+            <div className="h-64 bg-muted rounded" />
+          </div>
+        </main>
+      </div>
+    )
+  }
+
+  const date = eventDate ? new Date(Number(eventDate) * 1000) : null
+  const maxResalePrice = basePrice && resaleConfig ?
+    (basePrice * resaleConfig[0]) / 100n : basePrice
 
   return (
     <div className="min-h-screen bg-background">
@@ -27,21 +54,27 @@ export default function EventDetailPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
             <div className="aspect-video bg-muted rounded-lg mb-6" />
-            <h1 className="text-4xl font-bold mb-4">{event.name}</h1>
+            <h1 className="text-4xl font-bold mb-4">{eventName || 'Event'}</h1>
             <div className="flex gap-4 mb-6">
-              <Badge>Music Festival</Badge>
-              <Badge variant="outline">All Ages</Badge>
+              <Badge>NFT Ticket</Badge>
+              <Badge variant="outline">On-Chain</Badge>
             </div>
-            <div className="prose max-w-none">
-              <h2>About</h2>
-              <p>{event.description}</p>
-              <h2>Anti-Scalping Protection</h2>
-              <ul>
-                <li>Price cap: Max {event.maxResalePrice} (1.5x base price)</li>
-                <li>Hold period: 24 hours before resale allowed</li>
-                <li>Max 2 transfers per ticket</li>
-                <li>Verified buyers only</li>
-              </ul>
+            <div className="space-y-4">
+              <div>
+                <h2 className="text-2xl font-bold mb-2">Contract</h2>
+                <p className="text-sm text-muted-foreground font-mono">{address}</p>
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold mb-2">Anti-Scalping Protection</h2>
+                <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+                  <li>Price cap: Max {maxResalePrice ? formatEther(maxResalePrice) : 'N/A'} ETH
+                    ({resaleConfig ? Number(resaleConfig[0]) / 100 : 0}x base price)</li>
+                  <li>Hold period: {resaleConfig ? Number(resaleConfig[1]) / 86400 : 0} days before resale</li>
+                  <li>Max {resaleConfig ? Number(resaleConfig[2]) : 0} transfers per ticket</li>
+                  <li>Organizer royalty: {resaleConfig ? Number(resaleConfig[3]) / 100 : 0}%</li>
+                  <li>Verified buyers only</li>
+                </ul>
+              </div>
             </div>
           </div>
 
@@ -54,47 +87,61 @@ export default function EventDetailPage() {
               <CardContent className="space-y-4">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Price</span>
-                  <span className="font-bold text-lg">{event.basePrice}</span>
+                  <span className="font-bold text-lg">
+                    {basePrice ? `${formatEther(basePrice)} ETH` : 'N/A'}
+                  </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Available</span>
-                  <Badge>{event.available}/{event.total}</Badge>
+                  <span className="text-muted-foreground">Total Supply</span>
+                  <Badge>{totalSupply ? Number(totalSupply) : 0}</Badge>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Date</span>
-                  <span>{event.date}</span>
+                  <span className="text-sm">{date ? date.toLocaleDateString() : 'TBD'}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Venue</span>
-                  <span>{event.venue}</span>
-                </div>
-                <Button className="w-full" size="lg">
-                  Buy Ticket
-                </Button>
-                <p className="text-xs text-muted-foreground text-center">
-                  Connect wallet to purchase
-                </p>
-              </CardContent>
-            </Card>
 
-            <Card className="mt-4">
-              <CardHeader>
-                <CardTitle>Secondary Market</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground mb-4">
-                  2 tickets available for resale
-                </p>
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center p-2 border rounded">
-                    <span className="text-sm">0.12 ETH</span>
-                    <Button size="sm" variant="outline">Buy</Button>
-                  </div>
-                  <div className="flex justify-between items-center p-2 border rounded">
-                    <span className="text-sm">0.14 ETH</span>
-                    <Button size="sm" variant="outline">Buy</Button>
-                  </div>
-                </div>
+                {isConnected ? (
+                  isVerified ? (
+                    <>
+                      <div className="space-y-2">
+                        <Label htmlFor="seatInfo">Seat Information</Label>
+                        <Input
+                          id="seatInfo"
+                          placeholder="Section A, Row 5, Seat 12"
+                          value={seatInfo}
+                          onChange={(e) => setSeatInfo(e.target.value)}
+                          disabled={isPending}
+                        />
+                      </div>
+                      <Button
+                        className="w-full"
+                        size="lg"
+                        onClick={handlePurchase}
+                        disabled={!seatInfo.trim() || isPending}
+                      >
+                        {isPending ? 'Purchasing...' : txSuccess ? 'Success!' : 'Buy Ticket'}
+                      </Button>
+                      {txSuccess && (
+                        <p className="text-sm text-green-600 text-center">
+                          Ticket purchased successfully!
+                        </p>
+                      )}
+                    </>
+                  ) : (
+                    <div className="text-center py-4">
+                      <p className="text-sm text-destructive mb-2">
+                        You must be verified to purchase tickets
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Contact the event organizer to get verified
+                      </p>
+                    </div>
+                  )
+                ) : (
+                  <p className="text-sm text-muted-foreground text-center py-4">
+                    Connect wallet to purchase
+                  </p>
+                )}
               </CardContent>
             </Card>
           </div>
