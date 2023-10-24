@@ -53,10 +53,43 @@ lib/                    # Web3 config (Base + Base Sepolia)
 
 ## Usage
 
-1. **Create Event**: Set price caps and anti-scalping rules
-2. **Buy Ticket**: Primary purchase (verified buyers only)
-3. **Resell**: List after hold period (price automatically capped)
-4. **Enter Venue**: Show QR code, verify on-chain
+### For Event Organizers
+
+1. **Connect Wallet** with admin/organizer account
+2. **Go to Admin Panel** (`/admin`)
+3. **Verify Addresses**: Add buyer addresses to whitelist (single or batch)
+4. **Create Event** (`/organizer/create`):
+   - Set event details (name, date, base price)
+   - Configure anti-scalping rules (max resale price, hold period, max transfers)
+   - Deploy event contract (costs ~$0.003 on Base Sepolia)
+5. **Manage Event**: View sales, withdraw earnings
+
+### For Buyers
+
+1. **Connect Wallet** (must be verified by organizer)
+2. **Browse Events** on home page
+3. **View Event Details**: See anti-scalping rules and availability
+4. **Purchase Ticket**: Enter seat info and buy (verification required)
+5. **View My Tickets** (`/tickets`): See all owned NFTs with QR codes
+6. **List for Resale** (after hold period): Price automatically capped
+7. **Show QR Code** at venue for entry
+
+### For Venue Staff
+
+1. **Go to Check-In** (`/checkin`)
+2. **Scan QR Code** from buyer's ticket
+3. **Verify Ticket**: See seat info and redemption status
+4. **Redeem**: Mark ticket as used (prevents re-entry)
+
+### Deployed Contracts (Base Sepolia)
+
+```
+IdentityRegistry: 0xE2dc511dC5294a411b9880e11e24786f3567366c
+TicketMarketplace: 0xf67bD1645e3bf6130F40f6F5d6b51B7e185EeB43
+EventFactory: 0x761583016dFAcbBa1859B5123C5ccd745D7f59eD
+```
+
+View on [BaseScan](https://sepolia.basescan.org)
 
 ## License
 
