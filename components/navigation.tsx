@@ -93,16 +93,16 @@ export function Navigation() {
             <Button disabled className="hidden sm:inline-flex">Connect Wallet</Button>
           ) : isInRefract && parentProfile ? (
             <Button onClick={handleWalletClick} className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full overflow-hidden">
+              <div className="w-6 h-6 rounded-full overflow-hidden">
                 <Image
                   src={parentProfile.photo_url || '/placeholder-avatar.png'}
                   alt={parentProfile.name}
-                  width={32}
-                  height={32}
+                  width={24}
+                  height={24}
                   className="object-cover"
                 />
               </div>
-              <span className="hidden sm:inline">{parentProfile.name}</span>
+              <span>{parentProfile.name}</span>
             </Button>
           ) : isConnected ? (
             <Button onClick={() => disconnect()}>
