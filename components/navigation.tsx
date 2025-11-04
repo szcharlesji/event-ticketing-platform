@@ -1,19 +1,38 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { useAccount, useConnect, useDisconnect } from 'wagmi'
 import { Button } from '@/components/ui/button'
 import { useEffect, useState } from 'react'
+import { useInjectProvider } from '@refract-network/inject'
 
 export function Navigation() {
   const { address, isConnected } = useAccount()
   const { connect, connectors } = useConnect()
   const { disconnect } = useDisconnect()
+  const { isInRefract, launchRefractPassport, parentProfile } = useInjectProvider()
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
     setMounted(true)
   }, [])
+
+  // Force re-render when Refract context changes
+  useEffect(() => {
+    // This effect will trigger re-renders when isInRefract or parentProfile changes
+    if (mounted) {
+      // Component will automatically re-render due to state/prop changes
+    }
+  }, [isInRefract, parentProfile, mounted])
+
+  const handleWalletClick = () => {
+    if (isInRefract) {
+      launchRefractPassport()
+    } else {
+      connect({ connector: connectors[0] })
+    }
+  }
 
   return (
     <nav className="border-b">
@@ -46,13 +65,26 @@ export function Navigation() {
         <div>
           {!mounted ? (
             <Button disabled>Connect Wallet</Button>
+          ) : isInRefract && parentProfile ? (
+            <Button onClick={handleWalletClick} className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-full overflow-hidden">
+                <Image
+                  src={parentProfile.photo_url || '/placeholder-avatar.png'}
+                  alt={parentProfile.name}
+                  width={32}
+                  height={32}
+                  className="object-cover"
+                />
+              </div>
+              <span>{parentProfile.name}</span>
+            </Button>
           ) : isConnected ? (
             <Button onClick={() => disconnect()}>
               {address?.slice(0, 6)}...{address?.slice(-4)}
             </Button>
           ) : (
-            <Button onClick={() => connect({ connector: connectors[0] })}>
-              Connect Wallet
+            <Button onClick={handleWalletClick}>
+              {isInRefract ? 'Connect Passport' : 'Connect Wallet'}
             </Button>
           )}
         </div>
