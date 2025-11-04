@@ -82,8 +82,8 @@ export default function HomePage() {
       <Navigation />
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">Upcoming Events</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl md:text-4xl font-bold mb-2">Upcoming Events</h1>
+          <p className="text-sm md:text-base text-muted-foreground">
             Fair-priced tickets with anti-scalping protection
           </p>
         </div>

@@ -60,8 +60,8 @@ export default function AdminPage() {
       <Navigation />
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">Admin Panel</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl md:text-4xl font-bold mb-2">Admin Panel</h1>
+          <p className="text-sm md:text-base text-muted-foreground">
             Manage identity verification for ticket buyers
           </p>
         </div>

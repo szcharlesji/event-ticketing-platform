@@ -45,7 +45,7 @@ function EventManagementCard({ eventAddress }: { eventAddress: `0x${string}` }) 
         <CardDescription className="font-mono text-xs truncate">{eventAddress}</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-4 gap-4 text-center">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 text-center">
           <div>
             <div className="text-2xl font-bold">{sold}</div>
             <div className="text-sm text-muted-foreground">Sold</div>
@@ -117,8 +117,8 @@ export default function OrganizerPage() {
       <Navigation />
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">Organizer Dashboard</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl md:text-4xl font-bold mb-2">Organizer Dashboard</h1>
+          <p className="text-sm md:text-base text-muted-foreground">
             Create events and track performance
           </p>
         </div>
@@ -139,7 +139,7 @@ export default function OrganizerPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <Label>Token Name</Label>
                     <Input
@@ -156,7 +156,7 @@ export default function OrganizerPage() {
                       onChange={(e) => setFormData({ ...formData, symbol: e.target.value })}
                     />
                   </div>
-                  <div className="col-span-2">
+                  <div className="md:col-span-2">
                     <Label>Event Name</Label>
                     <Input
                       placeholder="Summer Music Festival 2025"
@@ -186,7 +186,7 @@ export default function OrganizerPage() {
 
                 <div className="space-y-2">
                   <h3 className="font-semibold">Anti-Scalping Rules</h3>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <Label>Max Resale Multiplier (%)</Label>
                       <Input
